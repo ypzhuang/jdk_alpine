@@ -1,18 +1,21 @@
 FROM alpine:3.4
 
-MAINTAINER John <yinzhuan@cisco.com>
+MAINTAINER John <zhuangyinping@gmail.com>
 
 ENV GLIBC_VERSION=2.23-r3 \
-    LANG=C.UTF-8
+    LANG=C.UTF-8 \
+    JDK_VERSION=jdk1.8.0_91 \
+    JDK_ZIP=jdk-8u91-linux-x64.tar.gz
 
-RUN apk upgrade --update && \
-    apk add --update libstdc++ curl ca-certificates wget
+RUN apk upgrade --update && \    
+    apk add --update tzdata libstdc++ curl ca-certificates wget
 
+ENV TZ=Asia/Shanghai
 
 RUN echo "install third party from bitbucket "
 
-RUN wget "https://bitbucket.org/john_zhuang_team/jdk_on_linux/raw/e2fd6ec565e93cc24ba30311ccfadcf53854fbb1/jdk-8u91-linux-x64.tar.gz" \
-    -O /jdk-8u91-linux-x64.tar.gz
+RUN wget "https://bitbucket.org/john_zhuang_team/jdk_on_linux/raw/e2fd6ec565e93cc24ba30311ccfadcf53854fbb1/$JDK_ZIP" \
+    -O /$JDK_ZIP
 
 RUN for pkg in glibc-${GLIBC_VERSION} glibc-bin-${GLIBC_VERSION} glibc-i18n-${GLIBC_VERSION}; do curl -sSL https://github.com/andyshinn/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/${pkg}.apk -o /tmp/${pkg}.apk; done && \
     apk add --allow-untrusted /tmp/*.apk && \
@@ -25,13 +28,13 @@ RUN apk del curl
 ADD . /
 
 RUN mkdir -p /opt
-RUN tar xvf /jdk-8u91-linux-x64.tar.gz  -C /opt  \
-    && ln -s /opt/jdk1.8.0_91/bin/java /usr/bin/java \
-    && ln -s /opt/jdk1.8.0_91/bin/javac /usr/bin/javac \
-    && rm /jdk-8u91-linux-x64.tar.gz \
-    && rm /opt/jdk1.8.0_91/src.zip /opt/jdk1.8.0_91/javafx-src.zip
+RUN tar xvf /$JDK_ZIP  -C /opt  \
+    && ln -s /opt/$JDK_VERSION/bin/java /usr/bin/java \
+    && ln -s /opt/$JDK_VERSION/bin/javac /usr/bin/javac \
+    && rm /$JDK_ZIP \
+    && rm /opt/$JDK_VERSION/src.zip /opt/$JDK_VERSION/javafx-src.zip
 
-ENV JAVA_HOME /opt/jdk1.8.0_91/
+ENV JAVA_HOME /opt/$JDK_VERSION/
 RUN java -version
 
 
