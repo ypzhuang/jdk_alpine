@@ -4,8 +4,8 @@ MAINTAINER John <zhuangyinping@gmail.com>
 
 ENV GLIBC_VERSION=2.23-r3 \
     LANG=C.UTF-8 \
-    JDK_VERSION=jdk1.8.0_91 \
-    JDK_ZIP=jdk-8u91-linux-x64.tar.gz
+    JDK_VERSION=jdk1.8.0_211 \
+    JDK_ZIP=jdk-8u211-linux-x64.tar.gz
 
 RUN apk upgrade --update && \    
     apk add --update tzdata libstdc++ curl ca-certificates wget
@@ -14,7 +14,10 @@ ENV TZ=Asia/Shanghai
 
 RUN echo "install third party from bitbucket "
 
-RUN wget "https://bitbucket.org/john_zhuang_team/jdk_on_linux/raw/e2fd6ec565e93cc24ba30311ccfadcf53854fbb1/$JDK_ZIP" \
+#RUN wget "https://bitbucket.org/john_zhuang_team/jdk_on_linux/raw/e2fd6ec565e93cc24ba30311ccfadcf53854fbb1/$JDK_ZIP" \
+#    -O /$JDK_ZIP
+
+RUN wget "https://bitbucket.org/john_zhuang_team/jdk_on_linux/raw/c302fc99fac77c85b86543d5d58a9884ba29bdf9/$JDK_ZIP" \
     -O /$JDK_ZIP
 
 RUN for pkg in glibc-${GLIBC_VERSION} glibc-bin-${GLIBC_VERSION} glibc-i18n-${GLIBC_VERSION}; do curl -sSL https://github.com/andyshinn/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/${pkg}.apk -o /tmp/${pkg}.apk; done && \
